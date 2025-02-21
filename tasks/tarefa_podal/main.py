@@ -26,6 +26,12 @@ def carregar_sons(pasta_audios):
         raise FileNotFoundError(f"Arquivo de áudio não encontrado: {apito_arquivo}")
     sounds["apito"] = pygame.mixer.Sound(apito_arquivo)
     
+    # Carregar o som do apito
+    apito_arquivo = os.path.join(pasta_audios, "apito_final.mp3")
+    if not os.path.exists(apito_arquivo):
+        raise FileNotFoundError(f"Arquivo de áudio não encontrado: {apito_arquivo}")
+    sounds["apito_final"] = pygame.mixer.Sound(apito_arquivo)
+    
     return sounds
 
 # Função para gravar vídeo
@@ -60,7 +66,7 @@ except FileNotFoundError as e:
     exit()
 
 # Configurações
-num_trials = 10  # Número total de tentativas
+num_trials = 30  # Número total de tentativas
 prob_6 = 0.15    # Probabilidade do número 6 (~15%)
 
 # Criar sequência garantindo que o número 6 apareça 15% das vezes
@@ -106,7 +112,10 @@ try:
         
         data.append([num,time.time() - start_time])
         sounds[str(num)].play()  # Toca o som correspondente
-        pygame.time.wait(1500)  # Espera 1.5 segundos corretamente
+        if num == 6:
+            pygame.time.wait(2000)  
+        else:   
+            pygame.time.wait(800)  # Espera 1.5 segundos corretamente
 except Exception as e:
     print(f"Erro durante a reprodução dos sons: {e}")
 
@@ -116,6 +125,9 @@ gravando.clear()  # Para a gravação
 
 # Aguardar a finalização da thread de gravação
 thread_gravacao.join()
+
+sounds["apito_final"].play()
+time.sleep(sounds["apito_final"].get_length())  # Espera o tempo do apito
 
 # Liberar recursos
 cap.release()
